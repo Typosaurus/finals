@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Firebase Auth & Database Viewer</title>
+
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <script src="https://kit.fontawesome.com/090fe43456.js" crossorigin="anonymous"></script>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(145deg, #f8e1f4, #e0f4f8);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      text-align: center;
+    }
+
+    h2, h1 {
+      color: #ff69b4;
+    }
+
+    .tabs {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .tab-btn {
+      background-color: #ff85a2;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      color: white;
+    }
+
+    .tab-btn.active {
+      background-color: #6c5ce7;
+    }
+
+    .tab-content {
+      display: none;
+      margin: 20px auto;
+      max-width: 800px;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    input, button {
+      margin: 8px 0;
+      padding: 10px;
+      width: 90%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+    }
+
+    button {
+      background-color: #ff85a2;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
+
+    th {
+      background-color: #f4f4f4;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎀 Firebase Portal</h1>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('authTab')">Authentication & CRUD</button>
+    <button class="tab-btn" onclick="switchTab('tableTab')">View Database</button>
+  </div>
+
+  <!-- Auth + CRUD -->
+  <div class="tab-content active" id="authTab">
+    <div id="authForm">
+      <h2>Sign Up or Sign In</h2>
+      <input type="email" placeholder="Email" id="userEmail" />
+      <input type="password" placeholder="Password" id="userPassword" />
+      <br/>
+      <button onclick="userSignUp()">Sign Up</button>
+      <button onclick="userSignIn()">Sign In</button>
+    </div>
+
+    <div id="secretContent" style="display: none;">
+      <h2>📝 CRUD Section</h2>
+      <input type="text" placeholder="Roll No" id="roll" />
+      <input type="text" placeholder="Name" id="name" />
+      <input type="text" placeholder="Gender" id="gender" />
+      <input type="text" placeholder="Address" id="address" />
+      <input type="text" placeholder="Zip Code" id="zipcode" />
+      <input type="text" placeholder="Nationality" id="nationality" />
+      <br/>
+      <button id="insert">Insert</button>
+      <button id="read">Read</button>
+      <button id="update">Update</button>
+      <button id="delete">Delete</button>
+      <br/><br/>
+      <button onclick="userSignOut()" style="background-color: #6c5ce7;">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- Table View -->
+  <div class="tab-content" id="tableTab">
+    <h2>📊 Firebase Data Table</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Address</th>
+          <th>Username</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody id="data-table-body">
+        <tr><td colspan="5">Loading data...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Firebase Logic -->
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyA44ldoRDGJbcbAHZub8zadurb2gukQA2s",
+      authDomain: "crud-7de36.firebaseapp.com",
+      databaseURL: "https://crud-7de36-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "crud-7de36",
+      storageBucket: "crud-7de36.firebasestorage.app",
+      messagingSenderId: "837443992381",
+      appId: "1:837443992381:web:4124e1d4c7effa69996354"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const database = firebase.database();
+
+    const authForm = document.getElementById("authForm");
+    const secretContent = document.getElementById("secretContent");
+
+    function userSignUp() {
+      const email = document.getElementById("userEmail").value;
+      const password = document.getElementById("userPassword").value;
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(() => Swal.fire("Account Created!", "Welcome!", "success"))
+        .catch((error) => Swal.fire("Oops!", error.message, "error"));
+    }
+
+    function userSignIn() {
+      const email = document.getElementById("userEmail").value;
+      const password = document.getElementById("userPassword").value;
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => Swal.fire("Signed In!", "Welcome back!", "success"))
+        .catch((error) => Swal.fire("Error", error.message, "error"));
+    }
+
+    function userSignOut() {
+      auth.signOut().then(() => Swal.fire("Signed Out!", "", "info"));
+    }
+
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        authForm.style.display = "none";
+        secretContent.style.display = "block";
+      } else {
+        authForm.style.display = "block";
+        secretContent.style.display = "none";
+      }
+    });
+
+    // Switch Tab
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+
+      document.getElementById(tabId).classList.add('active');
+      document.querySelector(`.tab-btn[onclick="switchTab('${tabId}')"]`).classList.add('active');
+
+      if (tabId === 'tableTab') {
+        loadTableData();
+      }
+    }
+
+    // Load table data
+    function loadTableData() {
+      const tbody = document.getElementById("data-table-body");
+      const ref = database.ref('student');
+      ref.once('value')
+        .then(snapshot => {
+          const data = snapshot.val();
+          tbody.innerHTML = '';
+          if (data) {
+            Object.entries(data).forEach(([key, item]) => {
+              const row = `
+                <tr>
+                  <td>${key}</td>
+                  <td>${item.name || ''}</td>
+                  <td>${item.address || ''}</td>
+                  <td>${item.username || ''}</td>
+                  <td>${item.email || ''}</td>
+                </tr>`;
+              tbody.innerHTML += row;
+            });
+          } else {
+            tbody.innerHTML = '<tr><td colspan="5">No data found.</td></tr>';
+          }
+        })
+        .catch(error => {
+          tbody.innerHTML = `<tr><td colspan="5">Error: ${error.message}</td></tr>`;
+        });
+    }
+  </script>
+
+</body>
+</html>
