@@ -1,254 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Firebase Auth & Database Viewer</title>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"
+      integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
 
-  <!-- SweetAlert2 -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Authentication</title>
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
-
-  <!-- Font Awesome -->
-  <script src="https://kit.fontawesome.com/090fe43456.js" crossorigin="anonymous"></script>
-
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-  <style>
-    body {
-      font-family: 'Quicksand', sans-serif;
-      background: linear-gradient(145deg, #f8e1f4, #e0f4f8);
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-      text-align: center;
-    }
-
-    h2, h1 {
-      color: #ff69b4;
-    }
-
-    .tabs {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    .tab-btn {
-      background-color: #ff85a2;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      color: white;
-    }
-
-    .tab-btn.active {
-      background-color: #6c5ce7;
-    }
-
-    .tab-content {
-      display: none;
-      margin: 20px auto;
-      max-width: 800px;
-      background: white;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    input, button {
-      margin: 8px 0;
-      padding: 10px;
-      width: 90%;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 1em;
-    }
-
-    button {
-      background-color: #ff85a2;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-    }
-
-    th {
-      background-color: #f4f4f4;
-    }
-  </style>
+      <div id="authForm">
+        <div class="container">
+          <h2>Sign Up or Sign In</h2>
+          <input type="email" placeholder="Email" id="userEmail" />
+          <input type="password" placeholder="Password" id="userPassword" />
+          <br> <br>
+          <button id="signUpButton">Sign Up</button>
+          <button id="signInButton">Sign In</button>
+        </div>
+      </div>
+    <div id="secretContent">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 <body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Input</title>
+    <link rel="stylesheet" href="style.css"/>
+  </head>
+  <body>
+    <div class="container">
+      <h2>INPUT</h2>
+      <hr />
+      <br />
+      <div class="form">
+        RollNo: <input type="text" name="RollNo" id="roll" /> <br /><br />
+        Name:&nbsp; <input type="text" name="name" id="name" /> <br /><br />
+        Gender: <input type="text" name="gender" id="gender" /> <br /><br />
+        Address: <input type="text" name="Address" id="address" /> <br /><br />
+        Zip Code: <input type="text" name="Zip Code" id="zipcode" /> <br /><br />
+        Nationality: <input type="text" name="Nationality" id="nationality" /> <br /><br />
+      </div>
 
-  <h1>🎀 Firebase Portal</h1>
-
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('authTab')">Authentication & CRUD</button>
-    <button class="tab-btn" onclick="switchTab('tableTab')">View Database</button>
-  </div>
-
-  <!-- Auth + CRUD -->
-  <div class="tab-content active" id="authTab">
-    <div id="authForm">
-      <h2>Sign Up or Sign In</h2>
-      <input type="email" placeholder="Email" id="userEmail" />
-      <input type="password" placeholder="Password" id="userPassword" />
-      <br/>
-      <button onclick="userSignUp()">Sign Up</button>
-      <button onclick="userSignIn()">Sign In</button>
+      <div class="buttons">
+        <button id="insert">Insert</button>
+        <button id="read">Read</button>
+        <button id="update">Update</button>
+        <button id="delete">Delete</button>
+        <button><a href= "fetchdata.html">View Data</a></button> 
+      </div>
     </div>
-
-    <div id="secretContent" style="display: none;">
-      <h2>📝 CRUD Section</h2>
-      <input type="text" placeholder="Roll No" id="roll" />
-      <input type="text" placeholder="Name" id="name" />
-      <input type="text" placeholder="Gender" id="gender" />
-      <input type="text" placeholder="Address" id="address" />
-      <input type="text" placeholder="Zip Code" id="zipcode" />
-      <input type="text" placeholder="Nationality" id="nationality" />
-      <br/>
-      <button id="insert">Insert</button>
-      <button id="read">Read</button>
-      <button id="update">Update</button>
-      <button id="delete">Delete</button>
-      <br/><br/>
-      <button onclick="userSignOut()" style="background-color: #6c5ce7;">Sign Out</button>
-    </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <div>
+    <button id="signOutButton">Sign Out</button>
+  </div>
   </div>
 
-  <!-- Table View -->
-  <div class="tab-content" id="tableTab">
-    <h2>📊 Firebase Data Table</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Address</th>
-          <th>Username</th>
-          <th>Email</th>
-        </tr>
-      </thead>
-      <tbody id="data-table-body">
-        <tr><td colspan="5">Loading data...</td></tr>
-      </tbody>
-    </table>
-  </div>
+    <script type="module">
+      //Update the below URL with the appropriate version if necessary.
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+      import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        onAuthStateChanged,
+        signOut,
+        //Update the below URL with the appropriate version if necessary.
+      } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
 
-  <!-- Firebase Logic -->
-  <script>
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyA44ldoRDGJbcbAHZub8zadurb2gukQA2s",
-      authDomain: "crud-7de36.firebaseapp.com",
-      databaseURL: "https://crud-7de36-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "crud-7de36",
-      storageBucket: "crud-7de36.firebasestorage.app",
-      messagingSenderId: "837443992381",
-      appId: "1:837443992381:web:4124e1d4c7effa69996354"
-    };
+      // INSERT YOUR FIREBASE CONFIG OBJECT HERE
+      const firebaseConfig = {
+        apiKey: "AIzaSyA44ldoRDGJbcbAHZub8zadurb2gukQA2s",
+  authDomain: "crud-7de36.firebaseapp.com",
+  databaseURL: "https://crud-7de36-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "crud-7de36",
+  storageBucket: "crud-7de36.firebasestorage.app",
+  messagingSenderId: "837443992381",
+  appId: "1:837443992381:web:4124e1d4c7effa69996354"
+};
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const database = firebase.database();
+      const userEmail = document.querySelector("#userEmail");
+      const userPassword = document.querySelector("#userPassword");
+      const authForm = document.querySelector("#authForm");
+      const secretContent = document.querySelector("#secretContent");
+      const signUpButton = document.querySelector("#signUpButton");
+      const signInButton = document.querySelector("#signInButton");
+      const signOutButton = document.querySelector("#signOutButton");
 
-    const authForm = document.getElementById("authForm");
-    const secretContent = document.getElementById("secretContent");
+      secretContent.style.display = "none";
 
-    function userSignUp() {
-      const email = document.getElementById("userEmail").value;
-      const password = document.getElementById("userPassword").value;
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(() => Swal.fire("Account Created!", "Welcome!", "success"))
-        .catch((error) => Swal.fire("Oops!", error.message, "error"));
-    }
+      const userSignUp = async () => {
+        const signUpEmail = userEmail.value;
+        const signUpPassword = userPassword.value;
+        createUserWithEmailAndPassword(auth, signUpEmail, signUpPassword)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            console.log(user);
+            Swal.fire("Your Account is succesfully created!");
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode + errorMessage);
+          });
+      };
 
-    function userSignIn() {
-      const email = document.getElementById("userEmail").value;
-      const password = document.getElementById("userPassword").value;
-      auth.signInWithEmailAndPassword(email, password)
-        .then(() => Swal.fire("Signed In!", "Welcome back!", "success"))
-        .catch((error) => Swal.fire("Error", error.message, "error"));
-    }
+      const userSignIn = async () => {
+        const signInEmail = userEmail.value;
+        const signInPassword = userPassword.value;
+        signInWithEmailAndPassword(auth, signInEmail, signInPassword)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            Swal.fire("You have signed in successfully!");
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode + errorMessage);
+          });
+      };
 
-    function userSignOut() {
-      auth.signOut().then(() => Swal.fire("Signed Out!", "", "info"));
-    }
-
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        authForm.style.display = "none";
-        secretContent.style.display = "block";
-      } else {
-        authForm.style.display = "block";
-        secretContent.style.display = "none";
-      }
-    });
-
-    // Switch Tab
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-
-      document.getElementById(tabId).classList.add('active');
-      document.querySelector(`.tab-btn[onclick="switchTab('${tabId}')"]`).classList.add('active');
-
-      if (tabId === 'tableTab') {
-        loadTableData();
-      }
-    }
-
-    // Load table data
-    function loadTableData() {
-      const tbody = document.getElementById("data-table-body");
-      const ref = database.ref('student');
-      ref.once('value')
-        .then(snapshot => {
-          const data = snapshot.val();
-          tbody.innerHTML = '';
-          if (data) {
-            Object.entries(data).forEach(([key, item]) => {
-              const row = `
-                <tr>
-                  <td>${key}</td>
-                  <td>${item.name || ''}</td>
-                  <td>${item.address || ''}</td>
-                  <td>${item.username || ''}</td>
-                  <td>${item.email || ''}</td>
-                </tr>`;
-              tbody.innerHTML += row;
-            });
+      const checkAuthState = async () => {
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            authForm.style.display = "none";
+            secretContent.style.display = "block";
           } else {
-            tbody.innerHTML = '<tr><td colspan="5">No data found.</td></tr>';
+            authForm.style.display = "block";
+            secretContent.style.display = "none";
           }
-        })
-        .catch(error => {
-          tbody.innerHTML = `<tr><td colspan="5">Error: ${error.message}</td></tr>`;
         });
-    }
-  </script>
+      };
 
-</body>
+      const userSignOut = async () => {
+        await signOut(auth);
+        Swal.fire("User Logout");
+      };
+
+      checkAuthState();
+
+      signUpButton.addEventListener("click", userSignUp);
+      signInButton.addEventListener("click", userSignIn);
+      signOutButton.addEventListener("click", userSignOut);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://kit.fontawesome.com/090fe43456.js" crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase.js"></script>
+
+    <script src="fireConfig.js"></script>
+
+    <script src="myscript.js"></script>
+  </body>
 </html>
